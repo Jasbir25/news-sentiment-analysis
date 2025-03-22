@@ -7,4 +7,4 @@ pandas==1.5.3
 textblob==0.17.1
 yake==0.4.8
 gTTS==2.3.2
-googletrans==4.0.0-rc1
+deep-translator
