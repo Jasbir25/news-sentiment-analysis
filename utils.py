@@ -8,6 +8,9 @@ from gtts import gTTS
 from googletrans import Translator
 
 def extract_news_data(company):
+    """
+    Fetches the latest news articles for a given company, extracts title, summary, sentiment, and topics.
+    """
     search_url = f'https://www.google.com/search?q={company}+news&tbm=nws'
     headers = {'User-Agent': 'Mozilla/5.0'}
     response = requests.get(search_url, headers=headers)
@@ -43,7 +46,9 @@ def extract_news_data(company):
     return news_data, sentiments, topics_list
 
 def generate_hindi_tts(summary_text, filename="sentiment_summary.mp3"):
-    # First translate the text from English to Hindi
+    """
+    Converts English summary text to Hindi and generates a TTS (text-to-speech) audio file.
+    """
     translator = Translator()
     try:
         hindi_text = translator.translate(summary_text, src='en', dest='hi').text
@@ -51,31 +56,35 @@ def generate_hindi_tts(summary_text, filename="sentiment_summary.mp3"):
         print(f"Translation error: {e}")
         hindi_text = summary_text  # Fallback to original text if translation fails
     
-    # Generate TTS with the Hindi text
     tts = gTTS(text=hindi_text, lang="hi")
     tts.save(filename)
     return filename
 
 def perform_comparative_analysis(news_data, sentiments, topics_list):
+    """
+    Performs comparative analysis on the extracted news articles to provide sentiment distribution,
+    topic overlap, and coverage differences.
+    """
     sentiment_distribution = Counter(sentiments)
     common_topics = set.intersection(*map(set, topics_list)) if topics_list else set()
     unique_topics = [set(topics) - common_topics for topics in topics_list]
     
-    # Get counts for each sentiment type
+    # Count sentiment occurrences
     positive_count = sentiment_distribution.get("Positive", 0)
     negative_count = sentiment_distribution.get("Negative", 0)
     neutral_count = sentiment_distribution.get("Neutral", 0)
     
-    # Create a descriptive sentiment summary
+    # Generate sentiment summary
     sentiment_summary = f"Found {positive_count} positive, {negative_count} negative, and {neutral_count} neutral articles."
     
+    # Compare article coverage differences
     coverage_differences = []
     for i in range(len(news_data) - 1):
         comparison = f"Article {i+1} discusses {news_data[i]['Topics']}, while Article {i+2} focuses on {news_data[i+1]['Topics']}."
         impact = "This shows how different sources emphasize varying aspects of the company's situation."
         coverage_differences.append({"Comparison": comparison, "Impact": impact})
     
-    # Create a list of article details with title, summary, and sentiment
+    # Organize article details
     article_details = []
     for i, article in enumerate(news_data):
         article_details.append({
@@ -87,7 +96,7 @@ def perform_comparative_analysis(news_data, sentiments, topics_list):
         })
     
     comparative_analysis = {
-        "Articles": article_details,  # Add individual article details
+        "Articles": article_details,
         "Comparative Analysis": {
             "Comparative Sentiment Score": {
                 "Sentiment Distribution": dict(sentiment_distribution),
