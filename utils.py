@@ -5,7 +5,7 @@ from textblob import TextBlob
 import yake
 from collections import Counter
 from gtts import gTTS
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 
 def extract_news_data(company):
     """
@@ -49,13 +49,12 @@ def generate_hindi_tts(summary_text, filename="sentiment_summary.mp3"):
     """
     Converts English summary text to Hindi and generates a TTS (text-to-speech) audio file.
     """
-    translator = Translator()
     try:
-        hindi_text = translator.translate(summary_text, src='en', dest='hi').text
+        hindi_text = GoogleTranslator(source="en", target="hi").translate(summary_text)
     except Exception as e:
         print(f"Translation error: {e}")
         hindi_text = summary_text  # Fallback to original text if translation fails
-    
+
     tts = gTTS(text=hindi_text, lang="hi")
     tts.save(filename)
     return filename
@@ -99,8 +98,7 @@ def perform_comparative_analysis(news_data, sentiments, topics_list):
         "Articles": article_details,
         "Comparative Analysis": {
             "Comparative Sentiment Score": {
-                "Sentiment Distribution": dict(sentiment_distribution),
-                "Sentiment Summary": sentiment_summary,
+                "Sentiment Distribution": sentiment_summary,
                 "Coverage Differences": coverage_differences,
                 "Topic Overlap": {
                     "Common Topics": list(common_topics),
@@ -112,4 +110,3 @@ def perform_comparative_analysis(news_data, sentiments, topics_list):
     }
     
     return comparative_analysis
-
