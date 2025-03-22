@@ -1,0 +1,10 @@
+streamlit
+requests
+gtts
+fastapi
+uvicorn
+beautifulsoup4
+pandas
+textblob
+yake
+googletrans==4.0.0-rc1
